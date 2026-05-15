@@ -12,6 +12,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 
+DEFAULT_DROP_COLUMNS = ("RowNumber", "CustomerId", "Surname")
+
 
 @dataclass
 class ChurnModelResult:
@@ -75,12 +77,13 @@ def train_churn_model(
     test_size: float = 0.2,
     random_state: int = 42,
     n_estimators: int = 100,
+    drop_columns: tuple[str, ...] = DEFAULT_DROP_COLUMNS,
 ) -> ChurnModelResult:
     cleaned = clean_dataset(dataframe)
     if target_column not in cleaned.columns:
         raise ValueError(f"Target column '{target_column}' is missing from the dataset.")
 
-    prepared = cleaned.drop(columns=["RowNumber", "CustomerId", "Surname"], errors="ignore")
+    prepared = cleaned.drop(columns=list(drop_columns), errors="ignore")
 
     X = prepared.drop(columns=[target_column])
     y = prepared[target_column]

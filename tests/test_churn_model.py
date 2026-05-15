@@ -15,7 +15,7 @@ class TestChurnModel(unittest.TestCase):
                     "CustomerId": 100000 + i,
                     "Surname": f"Customer{i}",
                     "CreditScore": 650 + (i % 40),
-                    "Geography": "France" if i % 3 == 0 else "Spain" if i % 3 == 1 else "Germany",
+                    "Geography": ["France", "Spain", "Germany"][i % 3],
                     "Gender": "Female" if i % 2 == 0 else "Male",
                     "Age": 30 + (i % 20),
                     "Tenure": i % 10,
