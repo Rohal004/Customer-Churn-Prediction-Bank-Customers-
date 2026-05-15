@@ -14,6 +14,12 @@ Identify customers who are likely to leave the bank.
 The training script expects a CSV file with an `Exited` target column.
 Typical columns include: `RowNumber`, `CustomerId`, `Surname`, `Geography`, `Gender`, and numeric account features.
 
+## Setup
+
+```bash
+pip install -r requirements.txt
+```
+
 ## Run
 
 ```bash
