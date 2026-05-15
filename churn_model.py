@@ -20,6 +20,13 @@ DROP_COLUMNS = ["RowNumber", "CustomerId", "Surname"]
 DEFAULT_CATEGORICAL = ["Geography", "Gender"]
 
 
+def test_size_arg(value: str) -> float:
+    size = float(value)
+    if not 0 < size < 1:
+        raise argparse.ArgumentTypeError("--test-size must be between 0 and 1 (exclusive)")
+    return size
+
+
 def load_and_prepare_data(data_path: Path) -> tuple[pd.DataFrame, pd.Series]:
     """Load dataset and split into feature and target sets."""
     if not data_path.exists():
@@ -124,7 +131,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--test-size",
-        type=float,
+        type=test_size_arg,
         default=0.2,
         help="Fraction of data to reserve for test split (default: 0.2)",
     )
