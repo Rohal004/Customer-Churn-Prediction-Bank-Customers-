@@ -31,7 +31,7 @@ class TestChurnModel(unittest.TestCase):
 
         result = train_churn_model(dataframe)
 
-        self.assertGreater(result.accuracy, 0.3)
+        self.assertGreaterEqual(result.accuracy, 0.5)
         self.assertLessEqual(result.accuracy, 1.0)
         self.assertFalse(result.feature_importance.empty)
         self.assertIn("feature", result.feature_importance.columns)
