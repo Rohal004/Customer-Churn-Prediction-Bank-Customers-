@@ -1,0 +1,35 @@
+Rows loaded: 24
+Rows after cleaning: 24
+Duplicate rows removed: 0
+
+Accuracy: 1.0000
+
+Classification report:
+
+              precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00         3
+           1       1.00      1.00      1.00         2
+
+    accuracy                           1.00         5
+   macro avg       1.00      1.00      1.00         5
+weighted avg       1.00      1.00      1.00         5
+
+
+Target distribution:
+  0: 12 (50.0%)
+  1: 12 (50.0%)
+
+Top 10 feature importances:
+
+              feature  importance
+   cat__Gender_Female    0.240351
+     cat__Gender_Male    0.238483
+             num__Age    0.194792
+         num__Balance    0.102480
+          num__Tenure    0.095508
+     num__CreditScore    0.059668
+ num__EstimatedSalary    0.035271
+   num__NumOfProducts    0.018476
+cat__Geography_France    0.010117
+  num__IsActiveMember    0.002711
