@@ -31,9 +31,13 @@ class TestChurnModel(unittest.TestCase):
 
         result = train_churn_model(dataframe)
 
-        self.assertGreaterEqual(result.accuracy, 0.0)
+        self.assertGreater(result.accuracy, 0.3)
         self.assertLessEqual(result.accuracy, 1.0)
         self.assertFalse(result.feature_importance.empty)
+        self.assertIn("feature", result.feature_importance.columns)
+        self.assertIn("importance", result.feature_importance.columns)
+        self.assertTrue(pd.api.types.is_numeric_dtype(result.feature_importance["importance"]))
+        self.assertTrue((result.feature_importance["importance"] >= 0).all())
         joined_features = " ".join(result.feature_importance["feature"].tolist())
         self.assertIn("cat__Geography_", joined_features)
         self.assertIn("cat__Gender_", joined_features)

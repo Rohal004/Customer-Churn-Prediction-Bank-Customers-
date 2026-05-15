@@ -31,7 +31,7 @@ def clean_dataset(dataframe: pd.DataFrame) -> pd.DataFrame:
     return cleaned
 
 
-def build_pipeline(features: pd.DataFrame) -> Pipeline:
+def build_pipeline(features: pd.DataFrame, n_estimators: int = 100) -> Pipeline:
     numeric_columns = features.select_dtypes(exclude=["object"]).columns.tolist()
     categorical_columns = features.select_dtypes(include=["object"]).columns.tolist()
 
@@ -60,7 +60,7 @@ def build_pipeline(features: pd.DataFrame) -> Pipeline:
             (
                 "classifier",
                 RandomForestClassifier(
-                    n_estimators=300,
+                    n_estimators=n_estimators,
                     random_state=42,
                     class_weight="balanced",
                 ),
@@ -74,6 +74,7 @@ def train_churn_model(
     target_column: str = "Exited",
     test_size: float = 0.2,
     random_state: int = 42,
+    n_estimators: int = 100,
 ) -> ChurnModelResult:
     cleaned = clean_dataset(dataframe)
     if target_column not in cleaned.columns:
@@ -92,7 +93,7 @@ def train_churn_model(
         stratify=y,
     )
 
-    model = build_pipeline(X)
+    model = build_pipeline(X, n_estimators=n_estimators)
     model.fit(X_train, y_train)
 
     predictions = model.predict(X_test)
