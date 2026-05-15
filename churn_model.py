@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+from pathlib import Path
 
 import pandas as pd
 from sklearn.compose import ColumnTransformer
@@ -21,6 +22,9 @@ class ChurnModelResult:
     classification_report_text: str
     feature_importance: pd.DataFrame
     model: Pipeline
+    cleaned_rows: int
+    dropped_duplicate_rows: int
+    target_distribution: pd.Series
 
 
 def clean_dataset(dataframe: pd.DataFrame) -> pd.DataFrame:
@@ -79,6 +83,7 @@ def train_churn_model(
     n_estimators: int = 100,
     drop_columns: tuple[str, ...] = DEFAULT_DROP_COLUMNS,
 ) -> ChurnModelResult:
+    original_row_count = len(dataframe)
     cleaned = clean_dataset(dataframe)
     if target_column not in cleaned.columns:
         raise ValueError(f"Target column '{target_column}' is missing from the dataset.")
@@ -117,7 +122,19 @@ def train_churn_model(
         classification_report_text=report,
         feature_importance=feature_importance,
         model=model,
+        cleaned_rows=len(cleaned),
+        dropped_duplicate_rows=original_row_count - len(cleaned),
+        target_distribution=y.value_counts().sort_index(),
     )
+
+
+def format_target_distribution(target_distribution: pd.Series) -> str:
+    lines = ["Target distribution:"]
+    total = int(target_distribution.sum())
+    for label, count in target_distribution.items():
+        percentage = (count / total) * 100 if total else 0.0
+        lines.append(f"  {label}: {count} ({percentage:.1f}%)")
+    return "\n".join(lines)
 
 
 def main() -> None:
@@ -134,16 +151,34 @@ def main() -> None:
         type=int,
         help="Number of top feature importances to display.",
     )
+    parser.add_argument(
+        "--save-model",
+        type=Path,
+        help="Optional path to save the trained pipeline as a pickle file.",
+    )
     args = parser.parse_args()
 
     dataframe = pd.read_csv(args.data_path)
     result = train_churn_model(dataframe, target_column=args.target)
 
+    print(f"Rows loaded: {len(dataframe)}")
+    print(f"Rows after cleaning: {result.cleaned_rows}")
+    print(f"Duplicate rows removed: {result.dropped_duplicate_rows}")
+    print()
     print(f"Accuracy: {result.accuracy:.4f}")
     print("\nClassification report:\n")
     print(result.classification_report_text)
+    print()
+    print(format_target_distribution(result.target_distribution))
     print(f"\nTop {args.top_n} feature importances:\n")
     print(result.feature_importance.head(args.top_n).to_string(index=False))
+
+    if args.save_model:
+        import pickle
+
+        with args.save_model.open("wb") as model_file:
+            pickle.dump(result.model, model_file)
+        print(f"\nSaved trained model to: {args.save_model}")
 
 
 if __name__ == "__main__":

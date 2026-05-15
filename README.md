@@ -25,6 +25,21 @@ Optional arguments:
 
 - `--target` to use a different target column (default `Exited`)
 - `--top-n` to control how many top feature importances are shown
+- `--save-model /path/to/model.pkl` to save the trained pipeline as a pickle file
+
+When the script runs, it prints:
+
+- how many rows were loaded
+- how many rows remain after cleaning
+- how many duplicate rows were removed
+- the target-class distribution
+- accuracy, the classification report, and the top feature importances
+
+Example:
+
+```bash
+python churn_model.py /path/to/Churn_Modelling.csv --top-n 15 --save-model churn_model.pkl
+```
 
 ## Run focused tests
 
